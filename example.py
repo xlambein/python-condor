@@ -27,17 +27,17 @@ if not condor.is_condor_job():
 			log='condor.log',
 			debug=False
 	) as job:
-        for args in cross_product((I, J, K)):
-            job.queue(arguments=args)
+		for args in cross_product((I, J, K)):
+			job.queue(arguments=args)
 
 # Condor job
 else:
-    i, j, k = sys.argv[1:]
-    i = int(i)
-    k = float(k)
+	i, j, k = sys.argv[1:]
+	i = int(i)
+	k = float(k)
 
-    a = j * i
-    b = k ** i
+	a = j * i
+	b = k ** i
 
-    print('{}, {}'.format(a, b))
+	print('{}, {}'.format(a, b))
 
