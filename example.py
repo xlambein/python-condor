@@ -22,7 +22,7 @@ K = [0.1, 0.2, 0.4]
 # Condor jobs launcher
 if not condor.is_condor_job():
 	with condor.SelfJob(
-			output='output.csv',
+			output='outputs/output.$(Process)',
 			error='errors/error.$(Process)',
 			log='condor.log',
 			debug=False
