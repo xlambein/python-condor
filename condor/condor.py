@@ -3,6 +3,10 @@ from subprocess import Popen, PIPE
 import shlex
 import os
 import inspect
+try:
+    from shlex import quote as cmd_quote
+except ImportError:
+    from pipes import quote as cmd_quote
 
 
 def is_condor_job():
@@ -49,8 +53,11 @@ class Job(object):
 			raise Exception("begin() was not called first")
 		
 		condor_submit = 'condor_submit' if not self.debug else 'cat'
-		with Popen(condor_submit, stdin=PIPE) as proc:
-			proc.communicate(self.buffer.encode())
+	#	with Popen(condor_submit, stdin=PIPE) as proc:
+	#		proc.communicate(self.buffer.encode())
+		proc = Popen(condor_submit, stdin=PIPE)
+		proc.communicate(self.buffer.encode())
+		proc.stdin.close()
 		
 		self.buffer = None
 	
@@ -63,7 +70,7 @@ class Job(object):
 		arguments = self.arguments + arguments
 		
 		if arguments:
-			self.buffer += "Arguments = {}\n".format(' '.join(map(shlex.quote, map(str, arguments))))
+			self.buffer += "Arguments = {}\n".format(' '.join(map(cmd_quote, map(str, arguments))))
 		
 		self.buffer += "Queue {}\n".format(n)
 	
