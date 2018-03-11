@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='condor',
-      version='0.1',
+      version='0.1.1',
       url='https://github.com/xlambein/python-condor',
       description='A helper for running Python jobs in a condor scheduler',
       author='Xavier Lambein',
