@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 from subprocess import Popen, PIPE
 import shlex
 import os
@@ -43,10 +42,7 @@ class Job(object):
         for field in ('executable', 'requirements', 'error', 'output', 'log'):
             value = getattr(self, field)
             if value:
-                self.buffer += "{} = {}\n".format(
-                        str.capitalize(field),
-                        value
-                )
+                self.set(field, value)
     
     def submit(self):
         if self.buffer is None:
@@ -60,6 +56,15 @@ class Job(object):
         proc.stdin.close()
         
         self.buffer = None
+
+    def set(self, field, value):
+        if self.buffer is None:
+            raise Exception("begin() was not called first")
+
+        self.buffer += "{} = {}\n".format(
+                str.capitalize(field),
+                value
+        )
     
     def queue(self, n=1, arguments=()):
         if self.buffer is None:
@@ -67,6 +72,8 @@ class Job(object):
         
         if type(arguments) == str:
             arguments = shlex.split(arguments)
+        elif type(arguments) != tuple:
+            raise Exception("`arguments` must be a string or a tuple")
         arguments = self.arguments + arguments
         
         if arguments:
@@ -84,7 +91,7 @@ class Job(object):
 
 class SelfJob(Job):
     
-    def __init__(self, python='/usr/bin/python3', arguments=(), **kwargs):
+    def __init__(self, python='/usr/bin/python', arguments=(), **kwargs):
         (_, filename, _, _, _, _) = inspect.getouterframes(inspect.currentframe())[1]
         arguments = (filename,) + arguments
         super(SelfJob, self).__init__(python, arguments=arguments, **kwargs)
@@ -94,5 +101,6 @@ if __name__ == "__main__":
     
     with Job('foo.sh --barbar "hello world"', arguments='foo "hell yeah"', debug=True) as job:
         job.queue(arguments=("hi", 1))
+        job.set("Output", "/tmp/test.$(Process)")
         job.queue(10, arguments=("oh no", 2))
 
