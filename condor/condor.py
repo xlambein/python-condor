@@ -77,7 +77,7 @@ class Job(object):
         arguments = self.arguments + arguments
         
         if arguments:
-            self.buffer += "Arguments = {}\n".format(' '.join(map(cmd_quote, map(str, arguments))))
+            self.buffer += "Arguments = \"{}\"\n".format(' '.join(map(cmd_quote, map(str, arguments))))
         
         self.buffer += "Queue {}\n".format(n)
     
